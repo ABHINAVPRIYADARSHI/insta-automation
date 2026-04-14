@@ -1,0 +1,20 @@
+{
+  "productivity": {
+    "name": "Productivity",
+    "emoji": "📱",
+    "default_niche": "Daily systems & routines",
+    "default_tone": "Punchy & direct",
+    "ig_user_id_env": "PROD_IG_USER_ID",
+    "ig_access_token_env": "PROD_IG_ACCESS_TOKEN",
+    "google_sheet_id_env": "PROD_GOOGLE_SHEET_ID"
+  },
+  "finance": {
+    "name": "Finance",
+    "emoji": "💰",
+    "default_niche": "Wealth building for beginners",
+    "default_tone": "Educational & structured",
+    "ig_user_id_env": "FINANCE_IG_USER_ID",
+    "ig_access_token_env": "FINANCE_IG_ACCESS_TOKEN",
+    "google_sheet_id_env": "FINANCE_GOOGLE_SHEET_ID"
+  }
+}
