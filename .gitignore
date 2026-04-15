@@ -1,25 +1,30 @@
-# Python cache and bytecode
+# Python cache and build artifacts
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.build/
+dist/
+build/
 
 # Virtual environments
 venv/
 .venv/
 env/
 
-# Environment and secrets
+# Environment and local secrets
 .env
 .env.local
 .env.*.local
+*.env
 google_creds.json
 google-creds.json
 
-# Local outputs and runtime artifacts
+# Runtime outputs and logs
 outputs/
 *.log
 
-# Tooling and test artifacts
+# Test, lint, and coverage artifacts
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -27,7 +32,12 @@ outputs/
 .coverage.*
 htmlcov/
 
-# Editors and OS files
+# Local agent/tooling metadata
+.code-review-graph/
+.claude/
+.mcp.json
+
+# IDE and OS files
 .vscode/
 .idea/
 .DS_Store
