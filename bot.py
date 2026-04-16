@@ -91,7 +91,7 @@ def get_session(uid: int) -> dict:
             "topic":     "",
             "carousels": [],
             "approval":  {},
-            "auto_post": False,
+            "auto_post": True,
             "date_str":  datetime.now().strftime("%Y-%m-%d"),
         }
     return sessions[uid]
@@ -111,7 +111,7 @@ def gemini_generate(niche: str, tone: str, topic: str, count: int) -> list[dict]
         prompt += f"\nAngle: {topic}"
     prompt += f"\n\nGenerate {count} carousel(s). Return JSON array with exactly {count} object(s)."
     resp   = _client.models.generate_content(
-        model    = "gemini-1.5-pro",
+        model    = "gemini-3-flash-preview",
         contents = prompt,
         config   = types.GenerateContentConfig(system_instruction=CONTENT_PROMPT),
     )
@@ -128,7 +128,7 @@ def gemini_intent(user_msg: str, session: dict) -> dict:
         f"approved={sum(1 for v in session['approval'].values() if v == 'approve')}"
     )
     resp   = _client.models.generate_content(
-        model    = "gemini-1.5-pro",
+        model    = "gemini-3-flash-preview",
         contents = f"STATE: {state}\nUSER: {user_msg}",
         config   = types.GenerateContentConfig(system_instruction=INTENT_PROMPT),
     )
@@ -494,7 +494,7 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text(
             f"✓ Channel: {cfg['emoji']} *{cfg['name']}*\n\n"
             f"Niche: {s['niche']}\nTone: {s['tone']}\n\n"
-            f"Say *generate* to start, or /settings to customise.",
+            f"Say */generate* to start, or /settings to customise.",
             parse_mode="Markdown",
         )
 

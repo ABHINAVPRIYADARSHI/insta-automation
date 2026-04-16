@@ -196,6 +196,7 @@ def post_carousel(
     _log("Creating image containers...")
     child_ids = []
     for i, url in enumerate(image_urls, 1):
+        _log(f"Creating container for url {url}")
         cid = _create_image_container(ig_user_id, access_token, url)
         child_ids.append(cid)
         _log(f"  slide {i}/{len(image_urls)} container: {cid}")

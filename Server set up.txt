@@ -1,0 +1,95 @@
+#Login into Oracle signalling VM to set up Telegram Webhook server on port 8443
+	ssh -i signla-vm-ssh.key ubuntu@80.225.226.53
+#Open the port in the OS-level firewall (iptables) and in the OCI Security List (the cloud network firewall).
+#To check current rules of IP table:
+    sudo iptables -L INPUT --line-numbers -v -n
+#Inserting the rule at line 7 in IPtable to open port 8443 for Telegram Webhook
+	sudo iptables -I INPUT 7 -p tcp --dport 8443 -m state --state NEW -j ACCEPT
+# This saves the current table to the persistent configuration file so that it does not get reset on system reboot
+	sudo netfilter-persistent save
+#Also, from Oracle console,  Networking > Virtual Cloud Networks >> Public Subnet >> Security List >> Add port 8443.
+
+#To verify, if port 8443 is opened for any outward request, you may run a python server and try to ping it from browser
+	sudo python3 -m http.server 8443
+Then open a browser and try http://80.225.226.53:84430.
+
+# download project files directly from GitHub
+	https://github.com/ABHINAVPRIYADARSHI/insta-automation.git
+#To transfer a file from local computer directly to VM:
+	scp -i signal-vm-ssh.key "D:\Instagram automation\.env" ubuntu@80.225.226.53:~/insta-automation/
+	scp -i signal-vm-ssh.key "D:\Instagram automation\google_creds.json" ubuntu@80.225.226.53:~/insta-automation/
+
+
+=========================================================================================================
+# Create virtual env
+	python3 -m venv venv
+## Activate virtual env
+	source venv/bin/activate
+
+pip install --upgrade pip
+pip install -r requirements.txt
+
+==============================================
+# Install certificates via port 80 using certbot.
+	sudo certbot certonly --standalone -d insta.share-mitra.com
+# Confirm that certificates were generated successfully
+	sudo ls -la /etc/letsencrypt/live/insta.share-mitra.com/
+# 1. Give ownership of the 'live' folder to the ubuntu user
+	sudo chown -R ubuntu:ubuntu /etc/letsencrypt/live/
+
+# 2. Give ownership of the 'archive' folder (where the actual files live)
+	sudo chown -R ubuntu:ubuntu /etc/letsencrypt/archive/
+
+# 3. Ensure the folders have 'execute' permissions so the user can enter them
+	sudo chmod -R 755 /etc/letsencrypt/live/
+	sudo chmod -R 755 /etc/letsencrypt/archive/
+=========================================================
+# Start the server to see if things are working fine
+	python3 server.py
+============================================================
+# Register the webhook URL:
+	Directly through browser
+	https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://insta.share-mitra.com:8443/webhook&secret_token=<YOUR_SECRET_TOKEN>
+	
+# To check if webhook registered successfully:
+	curl https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getWebhookInfo
+=============================================================
+# Create system service so that it auto restarts after crash/system reboot 
+We will use pm2, a node based tool.
+
+sudo apt install nodejs npm -y
+sudo npm install pm2 -g
+cd ~/insta-automation
+We gave our service a name insta-bot.
+pm2 start server.py --name "insta-bot" --interpreter ./venv/bin/python3
+pm2 save
+#This will output a command starting with sudo env PATH.... Copy and paste that specific command into your terminal and run it.
+	pm2 startup
+pm2 save
+================================================
+View Real-time Logs: pm2 logs insta-bot
+
+Check Status/CPU/Memory: pm2 list
+
+Restart after code changes: pm2 restart insta-bot
+
+Stop the bot: pm2 stop insta-bot
+
+The Dashboard: Type pm2 monit for a real-time terminal dashboard showing CPU and memory usage.
+=================================================================
+To handle logs and prevent memory consumption of logs over a period of time
+pm2 install pm2-logrotate
+# Rotate the log if it exceeds 5MB
+pm2 set pm2-logrotate:max_size 5M
+
+# Keep only the last 10 rotated files (older ones are deleted)
+pm2 set pm2-logrotate:retain 10
+
+# Compress the old logs (saves ~90% space)
+pm2 set pm2-logrotate:compress true
+
+# Force a rotation every day at midnight, even if the file is small
+pm2 set pm2-logrotate:rotateInterval '0 0 * * *'
+===================================================================
+#Start pinging your bot in telegram to see things happening
+

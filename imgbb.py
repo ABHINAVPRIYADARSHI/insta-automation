@@ -80,6 +80,7 @@ def upload_slides(slide_paths: list[Path]) -> list[str]:
     urls = []
     for i, path in enumerate(slide_paths):
         url = upload_image(path)
+        print(f"Uploaded slide {i+1}/{len(slide_paths)}: {url}")
         urls.append(url)
         if i < len(slide_paths) - 1:
             time.sleep(UPLOAD_DELAY)
