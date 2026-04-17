@@ -30,16 +30,14 @@ PREREQUISITES
 1. Google Cloud project with Sheets API enabled
 2. Service account JSON key saved as google_creds.json in project root
 3. Each Google Sheet shared with the service account email as Editor
-4. Sheet IDs set in .env as PROD_GOOGLE_SHEET_ID / FINANCE_GOOGLE_SHEET_ID
+4. Sheet IDs set in .env as MAN_WOMAN_GOOGLE_SHEET_ID / WEALTH_MINISTER_GOOGLE_SHEET_ID
 
 Imported by bot.py. Run as __main__ for standalone testing.
 """
 
-from pathlib import Path
 from datetime import datetime
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 
 from config import BASE_DIR, CHANNELS
 
@@ -57,8 +55,6 @@ HEADERS = [
 ]
 
 # Column indices (0-based) for targeted updates
-COL_STATUS    = 12   # M
-COL_IG_ID     = 13   # N
 
 
 # ── Client ────────────────────────────────────────────────────────────────────
@@ -68,10 +64,6 @@ def _service():
         str(CREDS_FILE), scopes=SCOPES
     )
     return build("sheets", "v4", credentials=creds, cache_discovery=False)
-
-
-def _sheet(svc, sheet_id: str):
-    return svc.spreadsheets().values()
 
 
 def _sheet_range(a1_range: str) -> str:
@@ -274,7 +266,7 @@ if __name__ == "__main__":
     }
     if not real_channels:
         print("\n✗ No real Google Sheet IDs configured in .env")
-        print("  → Set PROD_GOOGLE_SHEET_ID and/or FINANCE_GOOGLE_SHEET_ID")
+        print("  → Set MAN_WOMAN_GOOGLE_SHEET_ID and/or WEALTH_MINISTER_GOOGLE_SHEET_ID")
         sys.exit(1)
 
     # Test with first real channel

@@ -1,20 +1,20 @@
 {
-  "productivity": {
-    "name": "Productivity",
-    "emoji": "📱",
-    "default_niche": "Daily systems & routines",
+  "man_woman": {
+    "name": "man_woman",
+    "emoji": "💘",
+    "default_niche": "Why She Loses Interest After You Open Up - Vulnerability paradox, emotional timing, the confession trap",
     "default_tone": "Punchy & direct",
-    "ig_user_id_env": "PROD_IG_USER_ID",
-    "ig_access_token_env": "PROD_IG_ACCESS_TOKEN",
-    "google_sheet_id_env": "PROD_GOOGLE_SHEET_ID"
+    "ig_user_id_env": "MAN_WOMAN_IG_USER_ID",
+    "ig_access_token_env": "MAN_WOMAN_IG_ACCESS_TOKEN",
+    "google_sheet_id_env": "MAN_WOMAN_GOOGLE_SHEET_ID"
   },
   "finance": {
-    "name": "Finance",
+    "name": "the_wealth_minister",
     "emoji": "💰",
-    "default_niche": "Wealth building for beginners",
+    "default_niche": "The 5 AM Lie (What Rich People Actually Do)- Debunking morning routine myths, real billionaire habits, contrarian truth",
     "default_tone": "Educational & structured",
-    "ig_user_id_env": "FINANCE_IG_USER_ID",
-    "ig_access_token_env": "FINANCE_IG_ACCESS_TOKEN",
-    "google_sheet_id_env": "FINANCE_GOOGLE_SHEET_ID"
+    "ig_user_id_env": "WEALTH_MINISTER_IG_USER_ID",
+    "ig_access_token_env": "WEALTH_MINISTER_IG_ACCESS_TOKEN",
+    "google_sheet_id_env": "WEALTH_MINISTER_GOOGLE_SHEET_ID"
   }
 }

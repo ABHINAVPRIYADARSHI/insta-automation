@@ -56,7 +56,6 @@ from config import (
     SSL_CERT_PATH, SSL_KEY_PATH, ALLOWED_USER_ID, CHANNELS, OUTPUT_DIR,
     validate,
 )
-from sheets import ensure_all_headers
 
 logging.basicConfig(
     format  = "%(asctime)s %(levelname)s %(name)s — %(message)s",
@@ -101,6 +100,7 @@ async def lifespan(app: FastAPI):
     # 2. Ensure Google Sheet headers for all channels
     log.info("Checking Google Sheet headers...")
     try:
+        from sheets import ensure_all_headers
         ensure_all_headers()
     except Exception as e:
         log.warning(f"Sheet header check failed: {e} — continuing anyway")

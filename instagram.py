@@ -43,8 +43,8 @@ F. Get a Long-lived Access Token (valid 60 days)
    Step 3 — copy the access_token from the response → set in .env
 
 G. Set in .env:
-   PROD_IG_USER_ID=numeric_id_from_step_E
-   PROD_IG_ACCESS_TOKEN=token_from_step_F
+   MAN_WOMAN_IG_USER_ID=numeric_id_from_step_E
+   MAN_WOMAN_IG_ACCESS_TOKEN=token_from_step_F
 
 NOTE: Tokens expire after 60 days. Re-run Step F to refresh.
 
@@ -155,7 +155,7 @@ def post_carousel(
 
     slide_paths:  ordered list of PNG files from renderer.render_carousel()
     carousel:     carousel dict with caption, hashtags fields
-    channel_key:  key into CHANNELS config (e.g. 'productivity')
+    channel_key:  key into CHANNELS config (e.g. 'man_woman')
     notify:       optional async-safe callback for progress messages
                   signature: notify(text: str) — called with status updates
                   In production this sends a Telegram message.
@@ -232,19 +232,19 @@ if __name__ == "__main__":
     print("instagram.py — standalone test")
     print("=" * 40)
 
-    # Check credentials for productivity channel
-    channel_key = "productivity"
+    # Check credentials for man_woman channel
+    channel_key = "man_woman"
     cfg         = CHANNELS.get(channel_key, {})
     ig_user_id  = cfg.get("ig_user_id", "")
     ig_token    = cfg.get("ig_access_token", "")
 
     if not ig_user_id or ig_user_id == "dummy":
-        print(f"\n✗ PROD_IG_USER_ID not set in .env")
+        print(f"\n✗ MAN_WOMAN_IG_USER_ID not set in .env")
         print("  → Follow the PREREQUISITES in this file to get your IG User ID")
         sys.exit(1)
 
     if not ig_token or ig_token == "dummy":
-        print(f"\n✗ PROD_IG_ACCESS_TOKEN not set in .env")
+        print(f"\n✗ MAN_WOMAN_IG_ACCESS_TOKEN not set in .env")
         print("  → Follow the PREREQUISITES in this file to get a long-lived token")
         sys.exit(1)
 
