@@ -27,8 +27,14 @@ SSL_KEY_PATH  = os.getenv("SSL_KEY_PATH")
 # ── Gemini ────────────────────────────────────────────────────────────────────
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# ── imgbb ─────────────────────────────────────────────────────────────────────
+# Optional legacy image-host key (no longer required by default flow)
 IMGBB_API_KEY = os.getenv("IMGBB_API_KEY")
+
+# Cloudinary (recommended media host for Instagram Graph API compatibility)
+CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "").strip()
+CLOUDINARY_API_KEY    = os.getenv("CLOUDINARY_API_KEY", "").strip()
+CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "").strip()
+CLOUDINARY_FOLDER     = os.getenv("CLOUDINARY_FOLDER", "instagram_agent").strip()
 
 # ── Channels ──────────────────────────────────────────────────────────────────
 def load_channels() -> dict:
@@ -110,7 +116,6 @@ def validate() -> list[str]:
         "WEBHOOK_SECRET_TOKEN": WEBHOOK_SECRET_TOKEN,
         "WEBHOOK_URL":          WEBHOOK_URL,
         "GEMINI_API_KEY":       GEMINI_API_KEY,
-        "IMGBB_API_KEY":        IMGBB_API_KEY,
     }
     missing = [k for k, v in required.items() if not v]
     return missing

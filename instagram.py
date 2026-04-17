@@ -5,7 +5,7 @@ Posts rendered carousels to Instagram via the Graph API.
 
 FLOW (per carousel)
 ───────────────────
-1. upload_slides()     → imgbb gives us public URLs for each slide PNG
+1. upload_slides()     → Cloudinary gives us secure public URLs
 2. create_image_container() × N  → one IG container ID per image
 3. create_carousel_container()   → one container wrapping all image IDs
 4. publish_container()           → makes the post live, returns media ID
@@ -57,7 +57,7 @@ from pathlib import Path
 import requests
 
 from config import CHANNELS
-from imgbb import upload_slides
+from cloudinary_host import upload_slides
 
 GRAPH_BASE   = "https://graph.facebook.com/v18.0"
 ITEM_DELAY   = 1.5   # seconds between image container creation calls
@@ -72,14 +72,17 @@ def _post(endpoint: str, params: dict) -> dict:
     """
     resp = requests.post(
         f"{GRAPH_BASE}/{endpoint}",
-        params=params,
+        data=params,
         timeout=30,
     )
     data = resp.json()
     if "error" in data:
+        err = data["error"]
         raise RuntimeError(
             f"Graph API error on /{endpoint}: "
-            f"{data['error'].get('message', data['error'])}"
+            f"{err.get('message', err)} "
+            f"(type={err.get('type')}, code={err.get('code')}, "
+            f"subcode={err.get('error_subcode')}, fbtrace_id={err.get('fbtrace_id')})"
         )
     if "id" not in data:
         raise RuntimeError(f"Unexpected response from /{endpoint}: {data}")
@@ -148,7 +151,7 @@ def post_carousel(
     notify:       callable = None,
 ) -> str:
     """
-    Full pipeline: render PNGs → imgbb → Instagram → returns media ID.
+    Full pipeline: render images → Cloudinary URLs → Instagram.
 
     slide_paths:  ordered list of PNG files from renderer.render_carousel()
     carousel:     carousel dict with caption, hashtags fields
@@ -187,10 +190,10 @@ def post_carousel(
     )
     caption  = f"{carousel.get('caption', '')}\n\n{tags}".strip()
 
-    # Step 1 — upload slides to imgbb
-    _log(f"Uploading {len(slide_paths)} slides to imgbb...")
+    # Step 1 — upload slides to Cloudinary
+    _log(f"Uploading {len(slide_paths)} slides to Cloudinary...")
     image_urls = upload_slides(slide_paths)
-    _log(f"✓ {len(image_urls)} slides uploaded")
+    _log(f"✓ {len(image_urls)} slide URLs ready")
 
     # Step 2 — create one image container per slide
     _log("Creating image containers...")
@@ -224,7 +227,7 @@ def post_carousel(
 if __name__ == "__main__":
     import sys
     from datetime import datetime
-    from renderer import render_carousel, delete_carousel
+    from renderer import render_carousel, delete_paths
 
     print("instagram.py — standalone test")
     print("=" * 40)
@@ -279,5 +282,5 @@ if __name__ == "__main__":
         sys.exit(1)
     finally:
         # Always clean up local PNGs
-        delete_carousel(date_str, 99)
+        delete_paths(paths)
         print(f"\n[3] Local PNGs cleaned up")

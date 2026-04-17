@@ -23,7 +23,7 @@ from telegram.ext import (
 )
 
 from config import ALLOWED_USER_ID, CHANNELS, NICHES, TONES, GEMINI_API_KEY
-from renderer import render_carousel, delete_carousel
+from renderer import render_carousel, delete_paths
 from instagram import post_carousel
 from sheets import log_carousel, update_status
 
@@ -65,8 +65,8 @@ VALID NICHES: Daily systems & routines, Deep work & focus, Money habits & financ
 VALID TONES: Punchy & direct, Calm & insightful, Provocative & contrarian, Educational & structured, Motivational & energising, Stoic & philosophical, Data driven & analytical, Conversational & relatable, Bold & unapologetic, Minimalist & precise
 
 Respond ONLY with JSON. Examples:
-{"action":"generate","count":5,"reply":"Generating 5 carousels..."}
-{"action":"generate","count":5,"niche":"Deep work & focus","reply":"Generating on deep work..."}
+{"action":"generate","count":1,"reply":"Generating 1 carousel..."}
+{"action":"generate","count":1,"niche":"Deep work & focus","reply":"Generating on deep work..."}
 {"action":"set_niche","niche":"Deep work & focus","reply":"Niche set to Deep work & focus."}
 {"action":"set_topic","topic":"morning routines that don't suck","reply":"Topic set."}
 {"action":"post","reply":"Posting approved carousels..."}
@@ -111,7 +111,7 @@ def gemini_generate(niche: str, tone: str, topic: str, count: int) -> list[dict]
         prompt += f"\nAngle: {topic}"
     prompt += f"\n\nGenerate {count} carousel(s). Return JSON array with exactly {count} object(s)."
     resp   = _client.models.generate_content(
-        model    = "gemini-3-flash-preview",
+        model    = "gemini-2.5-flash-lite",
         contents = prompt,
         config   = types.GenerateContentConfig(system_instruction=CONTENT_PROMPT),
     )
@@ -128,7 +128,7 @@ def gemini_intent(user_msg: str, session: dict) -> dict:
         f"approved={sum(1 for v in session['approval'].values() if v == 'approve')}"
     )
     resp   = _client.models.generate_content(
-        model    = "gemini-3-flash-preview",
+        model    = "gemini-2.5-flash-lite",
         contents = f"STATE: {state}\nUSER: {user_msg}",
         config   = types.GenerateContentConfig(system_instruction=INTENT_PROMPT),
     )
@@ -314,7 +314,7 @@ async def run_post(s: dict, bot, chat_id: int) -> None:
         finally:
             # always delete local PNGs — success or failure
             if paths:
-                delete_carousel(s["date_str"], i+1)
+                delete_paths(paths)
 
     await bot.send_message(chat_id, "Done.")
 
@@ -335,7 +335,7 @@ async def execute(action: dict, s: dict, update: Update) -> None:
             s["tone"] = action["tone"]
         if action.get("topic"):
             s["topic"] = action["topic"]
-        count = int(action.get("count", 5))
+        count = int(action.get("count", 1))
         await run_generate(s, count, bot, chat_id)
 
     elif name == "set_niche":
@@ -387,13 +387,13 @@ def _help_text() -> str:
     return (
         "*Instagram Content Agent*\n\n"
         "Talk naturally or use commands:\n\n"
-        "• _generate 5 carousels on deep work_\n"
+        "• _generate 1 carousel on deep work_\n"
         "• _approve 1 and 3_\n"
         "• _post the approved ones_\n"
         "• _show status_\n\n"
         "/settings — niche, tone, channel, auto-post\n"
         "/channel  — switch channel\n"
-        "/generate — generate 5 carousels\n"
+        "/generate — generate 1 carousel\n"
         "/post     — post approved carousels\n"
         "/status   — approval overview"
     )
@@ -438,7 +438,7 @@ async def cmd_generate(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not is_allowed(uid):
         return
     s   = get_session(uid)
-    await run_generate(s, 5, update.message.get_bot(), update.message.chat_id)
+    await run_generate(s, 1, update.message.get_bot(), update.message.chat_id)
 
 async def cmd_post(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id

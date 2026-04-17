@@ -46,13 +46,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 from telegram import Update
 from telegram.ext import Application
 
 from config import (
     TELEGRAM_BOT_TOKEN, WEBHOOK_SECRET_TOKEN, WEBHOOK_URL,
-    SSL_CERT_PATH, SSL_KEY_PATH, ALLOWED_USER_ID, CHANNELS,
+    SSL_CERT_PATH, SSL_KEY_PATH, ALLOWED_USER_ID, CHANNELS, OUTPUT_DIR,
     validate,
 )
 from sheets import ensure_all_headers
@@ -141,6 +142,10 @@ app = FastAPI(
     docs_url = None,    # disable swagger UI in production
     lifespan = lifespan,
 )
+
+# Public image hosting for Instagram Graph API fetches.
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/outputs", StaticFiles(directory=str(OUTPUT_DIR)), name="outputs")
 
 
 # ── Webhook endpoint ──────────────────────────────────────────────────────────
