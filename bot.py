@@ -108,8 +108,8 @@ def mode_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("/personal mode", callback_data="mode:personal"),
-                InlineKeyboardButton("/random mode", callback_data="mode:random"),
+                InlineKeyboardButton("Personal mode", callback_data="mode:personal"),
+                InlineKeyboardButton("Random mode", callback_data="mode:random"),
             ]
         ]
     )

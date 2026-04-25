@@ -1,9 +1,9 @@
 #Login into Oracle signalling VM to set up Telegram Webhook server on port 8443
 	ssh -i signla-vm-ssh.key ubuntu@80.225.226.53
-#Open the port in the OS-level firewall (iptables) and in the OCI Security List (the cloud network firewall).
-#To check current rules of IP table:
+# Open the port in the OS-level firewall (iptables) and in the OCI Security List (the cloud network firewall).
+# To check current rules of IP table:
     sudo iptables -L INPUT --line-numbers -v -n
-#Inserting the rule at line 7 in IPtable to open port 8443 for Telegram Webhook
+# Inserting the rule at line 7 in IPtable to open port 8443 for Telegram Webhook
 	sudo iptables -I INPUT 7 -p tcp --dport 8443 -m state --state NEW -j ACCEPT
 # This saves the current table to the persistent configuration file so that it does not get reset on system reboot
 	sudo netfilter-persistent save
